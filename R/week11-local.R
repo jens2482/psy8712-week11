@@ -29,10 +29,10 @@ set.seed(54321)
 rows <- sample(nrow(gss_tbl))
 shuffled_data <-  gss_tbl[rows,]
 split <- round(nrow(gss_tbl)*0.75)
-train_gss_tbl <- shuffled_data[1:split,]
-test_gss_tbl <- shuffled_data[(split+1):nrow(gss_tbl),] 
+train_gss_tbl <- as.data.frame(shuffled_data[1:split,]) #added as.data.frame because otherwise my createFolds wouldn't work
+test_gss_tbl <- as.data.frame(shuffled_data[(split+1):nrow(gss_tbl),] ) #made this one a data frame too for consistency
 
-training_folds <- createFolds(training_tbl$work_hours) #didn't have this in my original code, but you said that we needed to do this in your video
+training_folds <- createFolds(train_gss_tbl$work_hours, 10) #didn't have this in my original code, but you said that we needed to do this in your video
 
 myControl <- trainControl( 
   method = "cv", 
@@ -194,6 +194,13 @@ table1_tbl <- tibble(
 
 table2_tbl <- tibble( 
   algo = c("OLS Regression", "Elastic Net", "Random Forest", "eXtreme Gradient Boosting"),
-  original = c(lm_train_results, enet_train_results, rf_train_results, xgb_train_results),
-  parallelized = c(lm_test_results, enet_test_results, rf_test_results, xgb_test_results)
+  original = c(toc_lm$callback_msg, toc_enet$callback_msg, toc_rf$callback_msg, toc_xgb$callback_msg),
+  parallelized = c(toc_lm_parallel$callback_msg, toc_enet_parallel$callback_msg, toc_rf_parallel$callback_msg, toc_xgb_parallel$callback_msg)
 )
+
+#Which models benefited most from parallelization and why?
+  #eXtreme Gradient Boosting benefited the most from parallelization becaue it is the most complex and had the most combinations of different hyperparameters to test. 
+#How big was the difference between the fastest and slowest parallelized model? Why?
+  #There were 198.54 seconds between the fastest and slowest parallelized models. That is a smaller spread that with the non-parallelized models (300.6 seconds). So clearly parallelization helps to improve the speed, especially with more complex models. However, the simpler models can only go so much faster than they did in the first place so the time doesn't change much for those and they continue to run quickly.
+#If your supervisor asked you to pick a model for use in a production model, which would you recommend and why? Consider both Table 1 and Table 2 when providing an answer.
+  #Similar to the last assignment, I would still choose Random Forest. It has the highest R2 value between all the models and also runs a good amount faster than eXtreme gradient boosting both when parallelizing and not.
