@@ -175,6 +175,7 @@ p_xgb_results <- cor(p_xgb, as.data.frame(test_gss_tbl)$work_hours)^2
 toc_xgb_parallel <- toc() #end time
 
 stopCluster(local_cluster) #stop cluster
+registerDoSEQ() #register a sequential parallel backend 
 
 # Publication
 lm_train_results <- str_replace(formatC(max(model_lm$results$Rsquared, na.rm = TRUE), format = "f", digits = 2), "^0", "") 

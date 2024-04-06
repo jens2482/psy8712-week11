@@ -107,7 +107,7 @@ p_xgb_results <- cor(p_xgb, as.data.frame(test_gss_tbl)$work_hours)^2
 toc_xgb <- toc() 
 
 
-local_cluster <- makeCluster(detectCores() - 1) 
+local_cluster <- makeCluster(detectCores() - 1) #this should still work for amd small, but it will do 127 cores instead of 7 that were used for mine.
 registerDoParallel(local_cluster)
 
 tic() 
@@ -174,7 +174,8 @@ p_xgb <- predict(model_xgb,
 p_xgb_results <- cor(p_xgb, as.data.frame(test_gss_tbl)$work_hours)^2
 toc_xgb_parallel <- toc() 
 
-stopCluster(local_cluster) #stop cluster
+stopCluster(local_cluster)
+registerDoSEQ()
 
 # Publication
 lm_train_results <- str_replace(formatC(max(model_lm$results$Rsquared, na.rm = TRUE), format = "f", digits = 2), "^0", "") 
@@ -186,15 +187,16 @@ rf_test_results <- str_replace(formatC(p_rf_results, format = "f", digits = 2), 
 xgb_train_results <- str_replace(formatC(max(model_xgb$results$Rsquared, na.rm = TRUE), format = "f", digits = 2), "^0", "") 
 xgb_test_results <- str_replace(formatC(p_xgb_results, format = "f", digits = 2), "^0", "") 
 
-table1_tbl <- tibble( 
+"Table 3" <- tibble( 
   algo = c("OLS Regression", "Elastic Net", "Random Forest", "eXtreme Gradient Boosting"),
   cv_rsq = c(lm_train_results, enet_train_results, rf_train_results, xgb_train_results),
   ho_rsq = c(lm_test_results, enet_test_results, rf_test_results, xgb_test_results)
 )
+write.csv("Table 3", "table3.csv")
 
-table2_tbl <- tibble( 
+"Table 4" <- tibble( 
   algo = c("OLS Regression", "Elastic Net", "Random Forest", "eXtreme Gradient Boosting"),
-  original = c(toc_lm$callback_msg, toc_enet$callback_msg, toc_rf$callback_msg, toc_xgb$callback_msg),
-  parallelized = c(toc_lm_parallel$callback_msg, toc_enet_parallel$callback_msg, toc_rf_parallel$callback_msg, toc_xgb_parallel$callback_msg)
+  supercomputer = c(toc_lm$callback_msg, toc_enet$callback_msg, toc_rf$callback_msg, toc_xgb$callback_msg),
+  supercomputer_127 = c(toc_lm_parallel$callback_msg, toc_enet_parallel$callback_msg, toc_rf_parallel$callback_msg, toc_xgb_parallel$callback_msg)
 )
-
+write.csv("Table 4", "table4.csv")
