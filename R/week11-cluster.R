@@ -4,7 +4,7 @@ library(haven)
 library(caret)
 library(parallel) 
 library(doParallel)
-library(tictoc) 
+library(tictoc) #I added some more libraries for when I was using the supercomputer, but I made those changes on the script file I actually used for the batch request (the one in the folder called week11-cluster that we were supposed to make)
 
 # Data Import and Cleaning
 data = read_sav("../data/GSS2016.sav")
