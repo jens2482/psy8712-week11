@@ -1,0 +1,5 @@
+"","algo","cv_rsq","ho_rsq"
+"1","OLS Regression",".12",".00"
+"2","Elastic Net",".84",".00"
+"3","Random Forest",".93",".57"
+"4","eXtreme Gradient Boosting",".93",".53"

@@ -1,0 +1,5 @@
+"","algo","supercomputer","supercomputer_14"
+"1","OLS Regression","7.629 sec elapsed","7.999 sec elapsed"
+"2","Elastic Net","15.254 sec elapsed","4.648 sec elapsed"
+"3","Random Forest","85.181 sec elapsed","29.258 sec elapsed"
+"4","eXtreme Gradient Boosting","276.446 sec elapsed","23.891 sec elapsed"

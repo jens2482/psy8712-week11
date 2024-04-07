@@ -1,14 +1,14 @@
 # Script Settings and Resources
-setwd(dirname(rstudioapi::getActiveDocumentContext()$path))
 library(tidyverse)
 library(haven)
 library(caret)
 library(parallel) 
 library(doParallel)
-library(tictoc) 
+library(tictoc)
+library(glmnet) 
 
 # Data Import and Cleaning
-data = read_sav("../data/GSS2016.sav")
+data = read_sav("../psy8712-week11/data/GSS2016.sav")
 gss_tbl <- data %>%
   mutate_all(~ifelse(.==0, NA, .)) %>%  
   drop_na(MOSTHRS) %>% 
@@ -101,7 +101,7 @@ p_xgb_results <- cor(p_xgb, as.data.frame(test_gss_tbl)$work_hours)^2
 toc_xgb <- toc() 
 
 
-local_cluster <- makeCluster(detectCores() - 1) #this should still work for amd small, but it will do 127 cores instead of 7 that were used for mine.
+local_cluster <- makeCluster(14) 
 registerDoParallel(local_cluster)
 
 tic() 
@@ -186,11 +186,11 @@ xgb_test_results <- str_replace(formatC(p_xgb_results, format = "f", digits = 2)
   cv_rsq = c(lm_train_results, enet_train_results, rf_train_results, xgb_train_results),
   ho_rsq = c(lm_test_results, enet_test_results, rf_test_results, xgb_test_results)
 )
-write.csv("Table 3", "table3.csv")
+write.csv(`Table 3`, "table3.csv")
 
 "Table 4" <- tibble( 
   algo = c("OLS Regression", "Elastic Net", "Random Forest", "eXtreme Gradient Boosting"),
   supercomputer = c(toc_lm$callback_msg, toc_enet$callback_msg, toc_rf$callback_msg, toc_xgb$callback_msg),
-  supercomputer_127 = c(toc_lm_parallel$callback_msg, toc_enet_parallel$callback_msg, toc_rf_parallel$callback_msg, toc_xgb_parallel$callback_msg)
+  supercomputer_14 = c(toc_lm_parallel$callback_msg, toc_enet_parallel$callback_msg, toc_rf_parallel$callback_msg, toc_xgb_parallel$callback_msg)
 )
-write.csv("Table 4", "table4.csv")
+write.csv(`Table 4`, "table4.csv")
